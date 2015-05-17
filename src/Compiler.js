@@ -22,7 +22,14 @@ var Compiler = function(opt) {
       return path.basename(filepath, path.extname(filepath));
     }
   });
-  this.opt.variable = opt.variable.replace('window.', '');
+	if (typeof this.opt.variable == 'string')
+	{
+		var sVar = this.opt.variable.replace('window.', '');
+		this.opt.variable = function()
+		{
+			return sVar;
+		};
+	}
   if(this.opt.root.substr(-1) !== '/') {
     this.opt.root += '/';
   }
@@ -153,15 +160,16 @@ Compiler.prototype.getFileContent = function(filePath) {
 Compiler.prototype.compileTemplates = function(files) {
 
   var js = '', _this = this;
-  
+
 
   // RequireJS
   if(!this.opt.requirejs && !this.opt.node) {
-    if(this.opt.variable.indexOf('.') !== -1) {
+	  js += ' = (function(){' + grunt.util.linefeed;
+    /*if(this.opt.variable.indexOf('.') !== -1) {
       js += this.opt.variable + ' = (function(){' + grunt.util.linefeed;
     } else {
       js += 'var ' + this.opt.variable + ' = (function(){' + grunt.util.linefeed;
-    }
+    }*/
   }
 
   if(this.opt.requirejs && !this.opt.node) {
@@ -187,6 +195,8 @@ Compiler.prototype.compileTemplates = function(files) {
   js += 'var tmpl = {};' + grunt.util.linefeed;
 
   files.map(function(filePath) {
+	  var sVar = _this.opt.variable(filePath);
+	  js = (sVar.indexOf('.') !== -1 ? '' : 'var ') + sVar + js;
     var template = _this.getFileContent(filePath)
       , fn       = doT.template(template)
       , key      = _this.opt.key(filePath);
