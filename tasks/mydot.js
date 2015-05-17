@@ -12,7 +12,7 @@ var path = require('path'),
 module.exports = function (grunt) {
     'use strict';
 
-    grunt.registerMultiTask('dot', 'prepares and combines any type of template into a script include', function () {
+    grunt.registerMultiTask('mydot', 'prepares and combines any type of template into a script include', function () {
         var options = this.options();
         options.gruntRoot = path.dirname(grunt.file.findup('Gruntfile.js')) + '/';
 
